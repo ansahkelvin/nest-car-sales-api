@@ -8,12 +8,14 @@ import {
   Query,
   Delete,
   Patch,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/createUserDto';
 import { UsersService } from './users.service';
 import { Response } from 'express';
-import { parse } from 'ts-jest';
 import { UpdateUserDto } from './dtos/updateUserDto';
+import { SerializeInterceptors } from "../Interceptors/serialize.interceptors";
 
 @Controller('auth')
 export class UsersController {
@@ -27,6 +29,7 @@ export class UsersController {
       .json({ message: 'User has successfully signed in', data: user });
   }
 
+  @UseInterceptors(SerializeInterceptors)
   @Get('/:id')
   findOneUser(@Param('id') id: string) {
     return this.userService.findOneById(parseInt(id));
@@ -42,7 +45,7 @@ export class UsersController {
 
   @Delete('/:id')
   async deleteUser(@Param('id') id: string, @Res() res: Response) {
-    await this.userService.removeUser(parse(id));
+    await this.userService.removeUser(parseInt(id));
     res.status(204).json({ message: 'User has been successfully deleted' });
   }
 
