@@ -9,13 +9,13 @@ import {
   Delete,
   Patch,
   UseInterceptors,
-  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/createUserDto';
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { UpdateUserDto } from './dtos/updateUserDto';
-import { SerializeInterceptors } from "../Interceptors/serialize.interceptors";
+import { SerializeInterceptors } from '../Interceptors/serialize.interceptors';
+import { UserDto } from './dtos/userDto';
 
 @Controller('auth')
 export class UsersController {
@@ -29,7 +29,7 @@ export class UsersController {
       .json({ message: 'User has successfully signed in', data: user });
   }
 
-  @UseInterceptors(SerializeInterceptors)
+  @UseInterceptors(new SerializeInterceptors(UserDto))
   @Get('/:id')
   findOneUser(@Param('id') id: string) {
     return this.userService.findOneById(parseInt(id));
