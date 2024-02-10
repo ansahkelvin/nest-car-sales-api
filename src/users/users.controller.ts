@@ -17,6 +17,7 @@ import { Serialize } from '../Interceptors/serialize.interceptors';
 import { UserDto } from './dtos/userDto';
 
 @Controller('auth')
+@Serialize(UserDto)
 export class UsersController {
   constructor(private userService: UsersService) {}
 
@@ -28,7 +29,6 @@ export class UsersController {
       .json({ message: 'User has successfully signed in', data: user });
   }
 
-  @Serialize(UserDto)
   @Get('/:id')
   findOneUser(@Param('id') id: string) {
     return this.userService.findOneById(parseInt(id));
