@@ -10,7 +10,7 @@ import { plainToClass } from 'class-transformer';
 
 interface ClassConstructor {
   new (...args: any[]): NonNullable<unknown>;
-};
+}
 export function Serialize(dto: ClassConstructor) {
   return UseInterceptors(new SerializeInterceptors(dto));
 }

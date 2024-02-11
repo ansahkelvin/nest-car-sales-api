@@ -15,15 +15,19 @@ import { Response } from 'express';
 import { UpdateUserDto } from './dtos/updateUserDto';
 import { Serialize } from '../Interceptors/serialize.interceptors';
 import { UserDto } from './dtos/userDto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 @Serialize(UserDto)
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(
+    private userService: UsersService,
+    private authService: AuthService,
+  ) {}
 
   @Post('/signup')
   async createUser(@Body() body: CreateUserDto, @Res() res: Response) {
-    const user = await this.userService.create(body.email, body.password);
+    const user = await this.authService.signup(body.email, body.password);
     res
       .status(201)
       .json({ message: 'User has successfully signed in', data: user });
