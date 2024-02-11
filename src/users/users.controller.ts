@@ -9,7 +9,7 @@ import {
   Delete,
   Patch,
 } from '@nestjs/common';
-import { CreateUserDto } from './dtos/createUserDto';
+import { AuthUserDTO } from './dtos/createUserDto';
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { UpdateUserDto } from './dtos/updateUserDto';
@@ -26,11 +26,13 @@ export class UsersController {
   ) {}
 
   @Post('/signup')
-  async createUser(@Body() body: CreateUserDto, @Res() res: Response) {
-    const user = await this.authService.signup(body.email, body.password);
-    res
-      .status(201)
-      .json({ message: 'User has successfully signed in', data: user });
+  @Serialize(UserDto)
+  async createUser(@Body() body: AuthUserDTO) {
+    return await this.authService.signup(body.email, body.password);
+  }
+  @Post('/signin')
+  async signInUser(@Body() body: AuthUserDTO) {
+    return await this.authService.signin(body.email, body.password);
   }
 
   @Get('/:id')
