@@ -8,6 +8,7 @@ import {
   Query,
   Delete,
   Patch,
+  Session,
 } from '@nestjs/common';
 import { AuthUserDTO } from './dtos/createUserDto';
 import { UsersService } from './users.service';
@@ -25,14 +26,23 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
+  @Get('/whoami')
+  async getUserDetails(@Session() session: any) {
+    return this.userService.findOneById(session.userId);
+  }
+
   @Post('/signup')
   @Serialize(UserDto)
-  async createUser(@Body() body: AuthUserDTO) {
-    return await this.authService.signup(body.email, body.password);
+  async createUser(@Body() body: AuthUserDTO, @Session() session: any) {
+    const user = await this.authService.signup(body.email, body.password);
+    session.userId = user.id;
+    return user;
   }
   @Post('/signin')
-  async signInUser(@Body() body: AuthUserDTO) {
-    return await this.authService.signin(body.email, body.password);
+  async signInUser(@Body() body: AuthUserDTO, @Session() session: any) {
+    const user = await this.authService.signin(body.email, body.password);
+    session.userId = user.id;
+    return user;
   }
 
   @Get('/:id')
