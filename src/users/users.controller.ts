@@ -9,6 +9,8 @@ import {
   Delete,
   Patch,
   Session,
+  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthUserDTO } from './dtos/createUserDto';
 import { UsersService } from './users.service';
@@ -17,9 +19,14 @@ import { UpdateUserDto } from './dtos/updateUserDto';
 import { Serialize } from '../Interceptors/serialize.interceptors';
 import { UserDto } from './dtos/userDto';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/currentUser.decorator';
+import { User } from './user.entity';
+import { CurrentUserInterceptor } from './interceptors/currentUser.interceptor';
+import { AuthGuard } from "../guards/auth.guard";
 
 @Controller('auth')
 @Serialize(UserDto)
+@UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
   constructor(
     private userService: UsersService,
@@ -27,8 +34,9 @@ export class UsersController {
   ) {}
 
   @Get('/whoami')
-  async getUserDetails(@Session() session: any) {
-    return this.userService.findOneById(session.userId);
+  @UseGuards(AuthGuard)
+  async currentUser(@CurrentUser() user: User) {
+    return user;
   }
 
   @Post('/signup')
