@@ -50,6 +50,11 @@ export class UsersController {
     return this.userService.findOneById(parseInt(id));
   }
 
+  @Post('/signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
+  }
+
   @Get()
   async findAllUsers(@Query() email: string, @Res() res: Response) {
     const users = await this.userService.findByEmail(email);
